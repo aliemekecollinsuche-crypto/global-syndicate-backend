@@ -4,90 +4,28 @@ const { createClient } = require('@supabase/supabase-js');
 const app = express();
 app.use(express.json());
 
-// Paste your credentials here:
-const supabaseUrl = 'https://kplvmsqrvboghwzcsxqi.supabase.co;
-const supabaseKey = 'sb_secret_-syYkJ0YIOnTpkNdkj1g6Q_3ClyDooJ;
+const supabaseUrl = 'https://kplvmsqrvboghwzcsxqi.supabase.co';
+const supabaseKey = 'sb_secret_-syYkJ0YIOnTpkndkj1g6Q_3ClyDooJ';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.get('/', (req, res) => {
-    res.status(200).send('Global Syndicate Backend is Online.');
-    });
-    // Endpoint for handling player-to-player transfers with 5% tariff
-    app.post('/api/transfer', async (req, res) => {
-        const { sender_id, receiver_id, amount } = req.body;
+  res.status(200).send('Global Syndicate Backend is Online.');
+});
 
-            if (!sender_id || !receiver_id || amount <= 0) {
-                    return res.status(400).json({ error: 'Invalid transfer parameters.' });
-                        }
+app.post('/api/transfer', async (req, res) => {
+  const { sender_id, receiver_id, amount } = req.body;
+  if (!sender_id || !receiver_id || !amount || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid fields' });
+  }
 
-                            const tariff = amount * 0.05;
-                                const netAmount = amount - tariff;
+  const tariff = amount * 0.05;
+  const netAmount = amount - tariff;
+  
+  res.status(200).json({ success: true, netAmount });
+});
 
-                                    try {
-                                            // 1. Deduct full amount from sender
-                                                    const { data: senderAccount, error: senderErr } = await supabase
-                                                                .from('gsm_accounts')
-                                                                            .select('balance')
-                                                                                        .eq('player_id', sender_id)
-                                                                                                    .single();
-
-                                                                                                            if (senderErr || senderAccount.balance < amount) {
-                                                                                                                        return res.status(400).json({ error: 'Insufficient balance.' });
-                                                                                                                                }
-
-                                                                                                                                        await supabase
-                                                                                                                                                    .from('gsm_accounts')
-                                                                                                                                                                .update({ balance: senderAccount.balance - amount })
-                                                                                                                                                                            .eq('player_id', sender_id);
-
-                                                                                                                                                                                    // 2. Deposit net amount to receiver
-                                                                                                                                                                                            const { data: receiverAccount } = await supabase
-                                                                                                                                                                                                        .from('gsm_accounts')
-                                                                                                                                                                                                                    .select('balance')
-                                                                                                                                                                                                                                .eq('player_id', receiver_id)
-                                                                                                                                                                                                                                            .single();
-
-                                                                                                                                                                                                                                                    await supabase
-                                                                                                                                                                                                                                                                .from('gsm_accounts')
-                                                                                                                                                                                                                                                                            .update({ balance: (receiverAccount?.balance || 0) + netAmount })
-                                                                                                                                                                                                                                                                                        .eq('player_id', receiver_id);
-
-                                                                                                                                                                                                                                                                                                // 3. Collect 5% tariff into Sovereign Treasury
-                                                                                                                                                                                                                                                                                                        const { data: treasury } = await supabase
-                                                                                                                                                                                                                                                                                                                    .from('sovereign_treasury')
-                                                                                                                                                                                                                                                                                                                                .select('total_collected')
-                                                                                                                                                                                                                                                                                                                                            .single();
-
-                                                                                                                                                                                                                                                                                                                                                    await supabase
-                                                                                                                                                                                                                                                                                                                                                                .from('sovereign_treasury')
-                                                                                                                                                                                                                                                                                                                                                                            .update({ total_collected: (treasury?.total_collected || 0) + tariff })
-                                                                                                                                                                                                                                                                                                                                                                                        .eq('id', 1);
-
-                                                                                                                                                                                                                                                                                                                                                                                                // 4. Record transaction log
-                                                                                                                                                                                                                                                                                                                                                                                                        await supabase.from('gsm_transactions').insert({
-                                                                                                                                                                                                                                                                                                                                                                                                                    sender_id,
-                                                                                                                                                                                                                                                                                                                                                                                                                                receiver_id,
-                                                                                                                                                                                                                                                                                                                                                                                                                                            gross_amount: amount,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        tariff_amount: tariff,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    net_amount: netAmount,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                status: 'completed'
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        });
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                res.status(200).json({
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            message: 'Transfer successful',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        gross_amount: amount,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    tariff_deducted: tariff,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                received_amount: netAmount
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        });
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } catch (err) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    res.status(500).json({ error: 'Transaction failed', details: err.message });
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        });
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        HHV
-
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Global Syndicate server running on port ${PORT}`);
-        });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
