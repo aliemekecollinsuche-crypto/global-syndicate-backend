@@ -6,7 +6,7 @@ app.use(express.json());
 
 // Paste your credentials here:
 const supabaseUrl = 'https://kplvmsqrvboghwzcsxqi.supabase.co;
-const supabaseKey = 'sb_secret_-syYkJ0YIOnTpkNdkj1g6Q_3ClyDooJ';
+const supabaseKey = 'sb_secret_-syYkJ0YIOnTpkNdkj1g6Q_3ClyDooJ;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
