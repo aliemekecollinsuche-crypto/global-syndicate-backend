@@ -1,0 +1,26 @@
+config_version=5
+
+[application]
+
+config/name="Global Syndicate"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+SupabaseAPI="*res://supabase_api.gd"
+PaymentGateway="*res://payment_gateway.gd"
+PushNotifications="*res://push_notifications.gd"
+
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/size/mode=0
+window/stretch/mode="canvas_items"
+window/handheld/orientation=1
+
+[rendering]
+
+renderer/rendering_method="mobile"
