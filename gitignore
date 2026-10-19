@@ -1,0 +1,13 @@
+# Godot 4.x import and cache folders
+.godot/
+*.import
+
+# Build output directories
+builds/
+*.apk
+*.aab
+
+# Local env & OS files
+.env
+.DS_Store
+Thumbs.db
