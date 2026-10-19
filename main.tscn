@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8s7v1m9q42p1"]
+
+[ext_resource type="Script" path="res://sovereign_dashboard.gd" id="1_dash"]
+
+[node name="MainUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dash")
+
+[node name="Header" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+
+[node name="TitleLabel" type="Label" parent="Header"]
+layout_mode = 1
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 60.0
+text = "GLOBAL SYNDICATE — APEX TOWER"
+
+[node name="GlobalTaxValue" type="Label" parent="Header"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = 60.0
+text = "$0.00"
+horizontal_alignment = 2
+
+[node name="Status" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 125.0
+offset_bottom = 185.0
+grow_horizontal = 2
+
+[node name="DefconLevel" type="Label" parent="Status"]
+layout_mode = 1
+offset_left = 30.0
+offset_top = 15.0
+offset_right = 300.0
+offset_bottom = 45.0
+text = "DEFCON 3"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CountryList" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
